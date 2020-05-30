@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Configuration file for VK bot
+"""
+# token issued on the VK group web-administration page
+token = '...'
+# confirmation token issued on the VK group web-administration page in "Callback API" section
+confirmation_token = ''
+# secret key for cross site request forgery protection. It will be in each VK server request
+secret_key = '...'
