@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include 
-from location_bot.views import index
+from location_bot.views import index, cartGenerate
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index) #include('location_bot.urls')) 
+    #url('', views.index, name='location_bot'),
+    path('cartGenerate/', cartGenerate, name='cartGenerate'),
+    path('', index), #include('location_bot.urls')) 
 ]

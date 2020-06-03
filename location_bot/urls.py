@@ -2,5 +2,6 @@ from django.conf.urls import url
 from . import views 
 
 urlpatterns = [
-	url(r'/', views.index, name='location_bot'), 
+	url('', views.index, name='location_bot'),
+        url('cartGenerate/', views.cartGenerate, name='cartGenerate'),
 ]
