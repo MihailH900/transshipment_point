@@ -1,7 +1,9 @@
-from django.conf.urls import url 
-from . import views 
+"""aplication urls"""
+
+from django.conf.urls import url
+from location_bot.views import index, cartGenerate
 
 urlpatterns = [
-	url('', views.index, name='location_bot'),
-        url('cartGenerate/', views.cartGenerate, name='cartGenerate'),
+	url('', index, name='location_bot'),
+        url('cartGenerate/', cartGenerate, name='cartGenerate'),
 ]

@@ -54,15 +54,14 @@ def index(request):
                     last_message = messages[len(messages) - 1]
                 if text == "delete":
                     VK_sender.objects.all().delete()
-                ans_1 = 'Знаю место и хочу назначить там встречу'
-                ans_2 = 'Еще не определился с выбором места'
+                ans_1 = "Знаю место встречи и хочу назначить там встречу"
+                ans_2 = "Ещё не определился с выбором места"
+
                 if len(messages) == 0 and text == "Начать":
                     sender.text = text
-                    sender.type = 3
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
+                    sender.meet_location_x = -1
+                    sender.meet_location_y = -1
                     sender.count = 0
-                    sender.key_phrase = ''
                     sender.save()
                     api.messages.send(access_token=token, user_id=str(user_id),
                                       message="Привет! Хочешь устроить"
@@ -77,11 +76,9 @@ def index(request):
 
                 if len(messages) == 1 and text == "Хочу встречу":
                     sender.text = text
-                    sender.type = 3
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
+                    sender.meet_location_x = -1
+                    sender.meet_location_y = -1
                     sender.count = 1
-                    sender.key_phrase = ''
                     sender.save()
                     api.messages.send(access_token=token, user_id=str(user_id),
                                       message = "Как ты хочешь встретиться?",
@@ -93,28 +90,24 @@ def index(request):
                                       "Давай ка ещё раз",
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
 
-                if last_message.count == 1 and text == ans_1:
+                if last_message.count == 1 and  text == "Знаю место и хочу назначить там встречу":
                     sender.text = text
-                    sender.type = 1
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
+                    sender.meet_location_x = -1
+                    sender.meet_location_y = -1
                     sender.count = last_message.count + 1
-                    sender.key_phrase = ''
                     sender.save()
                     api.messages.send(access_token=token, user_id=str(user_id),
                                       message = "Выбери место встречи:",
                                       random_id=random.randrange(-5000000, 5000000),
                                       v=5.107, keyboard = keyboards[1])
-                elif last_message.count == 1 and text == ans_2:
+                elif last_message.count == 1 and text == "Еще не определился с выбором места":
                     sender.text = text
-                    sender.type = 2
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
-                    sender.count = last_message.count + 1
-                    sender.key_phrase = ''
+                    sender.meet_location_x = -1
+                    sender.meet_location_y = -1
+                    sender.count = senderLast.count + 1
                     sender.save()
                     api.messages.send(access_token=token, user_id=str(user_id), 
-                                      message="Отметь своё местоположение на карте",
+                                      message="Выбери своё местоположение на карте",
                                       random_id=random.randrange(-5000000, 5000000),
                                       v=5.107, keyboard=keyboards[1])
                 elif last_message.count == 1 and text != ans_1 and text != ans_2:
@@ -124,12 +117,10 @@ def index(request):
                                       random_id=random.randrange(-5000000, 5000000),
                                       v=5.107, keyboard=keyboards[0])
 
-                if last_message.count == 2 and text == "" and last_message.type == 1:
+                if last_message.count == 2 and text == "":
                     sender.text = str(data['object']['message']['geo']['coordinates']['latitude']) 
                     sender.text += ' '
                     sender.text += str(data['object']['message']['geo']['coordinates']['longitude'])
-                    sender.type = 1
-                    sender.key_phrase = ''
                     sender.meet_location_x = data['object']['message']['geo']['coordinates']['latitude']
                     sender.meet_location_y = data['object']['message']['geo']['coordinates']['longitude']
                     sender.count = last_message.count + 1
@@ -137,35 +128,14 @@ def index(request):
                     api.messages.send(access_token=token, user_id=str(user_id),
                                       message = "Отлично! Теперь отправь нам ссылку на своего друга",
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
-                elif last_message.count == 2 and text == "" and last_message.type == 2:
-                    sender.type = 2
-                    sender.text = str(data['object']['message']['geo']['coordinates']['latitude'])
-                    sender.text += ' '
-                    sender.text += str(data['object']['message']['geo']['coordinates']['longitude'])
-                    sender.meet_location_x = data['object']['message']['geo']['coordinates']['latitude']
-                    sender.meet_location_y = data['object']['message']['geo']['coordinates']['longitude']
-                    sender.key_phrase = ''
-                    sender.count = last_message.count + 1
-                    sender.save()
-                    api.messages.send(access_token=token, user_id=str(user_id),
-                                      message="Отлично, теперь подумай и скажи,"
-                                      " в месте какого типа ты бы хотел встретится "
-                                      "(это может быть как просто кафе или парк, так и фраза, рода 'где поесть')",
-                                      random_id=random.randrange(-5000000, 5000000), v=5.107)
-                elif last_message.count == 2 and text != "" and last_message.type == 1:
-                    api.messages.send(access_token=token, user_id=str(user_id),
-                                      message="Хей, я просил отметить место встречи. "
-                                      "Давай ещё раз",
-                                      random_id=random.randrange(-5000000, 5000000),
-                                      v=5.107, keyboard=keyboards[1])
-                elif last_message.count == 2 and text != "" and last_message.type == 2:
+                elif last_message.count == 2 and text != "":
                     api.messages.send(access_token=token, user_id=str(user_id),
                                       message = "Хей, я же просил отметить своё местоположение"
                                       "на карте. Давай ка ещё раз",
                                       random_id=random.randrange(-5000000, 5000000),
                                       v=5.107, keyboard=keyboards[1])
 
-                if last_message.count == 3 and text[:15] == vk_link[:15] and last_message.type == 1:
+                if last_message.count == 3 and text[:15] == vk_link[:15]:
                     vk_friend_link = text[15:]
                     friends_massiv = api.users.get(access_token = token,
                                                    user_ids = vk_friend_link,
@@ -181,36 +151,23 @@ def index(request):
                                       message="Приглашение отправлено!",
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
                     sender.text = text
-                    sender.type = 1
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
+                    sender.meet_location_x = -1
+                    sender.meet_location_y = -1
                     sender.count = last_message.count + 1
                     sender.save()
-                elif last_message.count == 3 and text[:15] != vk_link[:15] and last_message.type == 1:
+                elif last_message.count == 3 and text[:15] != vk_link[:15]:
                     api.messages.send(access_token=token, user_id=str(user_id),
-                                      message="Хей, это не ссылка. Давай ка ещё раз, только ссылку",
-                                      random_id=random.randrange(-5000000, 5000000), v=5.107)
-                elif last_message.count == 3 and last_message.type == 2:
-                    sender.text = text
-                    sender.type = 2
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
-                    sender.count = last_message.count + 1
-                    sender.key_phrase = text
-                    sender.save()
-                    api.messages.send(access_token=token, user_id=str(user_id),
-                                      message="А теперь введи ссылка на своего друга, "
-                                      "с которым ты планируешь встречаться",
-                                      random_id=random.randrange(-5000000, 5000000), v=5.107)
+                                      message = "Хей, это не ссылка. Давай ка ещё раз, только ссылку",
+                                     random_id=random.randrange(-5000000, 5000000), v=5.107)
 
-                if last_message.count == 4 and text == "Встретится" and last_message.type == 1:
+                if last_message.count == 4 and text == "Встретится":
                     m_x = messages[len(messages)-2].meet_location_x
                     m_y = messages[len(messages)-2].meet_location_y
                     api.messages.send(access_token=token, user_id=str(user_id),
                                       message="Ссылка: http://alice.dqpig.ml/cartGenerate/?m_x="
                                       + str(m_x) + "&m_y=" + str(m_y),
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
-                    api.messages.send(access_token=token, user_id=messages[len(messages) - 1].user_id,
+                    api.messages.send(access_token=token, user_id=d[len(d) - 1].user_id,
                                       message="Ссылка: http://alice.dqpig.ml/cartGenerate/?m_x="
                                       + str(m_x) + "&m_y=" +  str(m_y),
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
@@ -221,34 +178,11 @@ def index(request):
                                       " попробуйте позже",
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
                     VK_sender.objects.all().delete()
-                elif last_message.count == 4 and text != "Встретится" and text != "Отакз от встречи" and last_message.type == 1:
+                elif last_message.count == 4 and text != "Встретится" and text != "Отакз от встречи":
                     api.messages.send(access_token=token, user_id=user_id,
                                       message="Хей, я просил сказать 'Встретится'. "
                                       "Давай ка ещё раз",
                                       random_id=random.randrange(-5000000, 5000000), v=5.107)
-                elif last_message.count == 4 and text[:15] == vk_link[:15]:
-                    vk_friend_link = text[15:]
-                    friend_massiv = api.users.get(access_token=token,
-                                                  user_ids=vk_friend_link,
-                                                  v=5.107)
-                    friend_id = friend_massiv[0]['id']
-                    api.messages.send(access_token=token, user_id=str(friend_id),
-                                      message="Привет! С тобой хочет встретится  https://vk.com/id"
-                                      + str(user_id)
-                                      + "\n Ключевая фраза: " + last_message.key_phrase
-                                      + "\n Напиши 'Встретится', если готов встретится"
-                                      ", или напиши 'Отказ от встречи', если откаpзываешься",
-                                      random_id=random.randrange(-5000000, 5000000), v=5.107)
-                    api.messages.send(access_token=token, user_id=str(user_id),
-                                      message="Предложение встретится отправлено"
-                                      "\n Ждите, пока станет известно, хочет ли человек встречаться с вами",
-                                      random_id=random.randrange(-5000000, 5000000), v=5.107)
-                    sender.text = text
-                    sender.meet_location_x = '-1'
-                    sender.meet_location_y = '-1'
-                    sender.count = last_message.count + 1
-                    sender.key_phrase = last_message.key_phrase
-                    sender.save()
                 return HttpResponse('ok', content_type="text/plain", status=200)
             #else: 
                 #raise Http404
