@@ -23,20 +23,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'lp8lv+lzyyzz)5j5i5ji18k@lu+q&!$^z^#a@9091m%u7&xtou'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = False
 
 ALLOWED_HOSTS = [
-'localhost',
-u'dqpig.ml',
-u'http://dqpig.ml/alice-location/',
-u'http://alice.dqpig.ml/' 
+    'localhost',
+    u'dqpig.ml',
+    u'http://dqpig.ml/alice-location/',
+    u'http://alice.dqpig.ml/'
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'location_bot', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'rest_framework',
+    'location_bot'
 ]
 
 MIDDLEWARE = [
